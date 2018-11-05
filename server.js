@@ -1,8 +1,11 @@
-require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const blogPostsRouter = require('./blogPostsRouter');
 const authorsRouter = require('./authorsRouter');
+
+if (process.env.NODE_ENV !== "production") {
+  require('dotenv').config();
+}
 
 
 // config.js is where we control constants for entire
