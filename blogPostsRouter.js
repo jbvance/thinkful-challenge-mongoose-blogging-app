@@ -62,15 +62,37 @@ router.put('/:id', jsonParser, (req, res) => {
 });
 
 
+router.get('/', (req, res) => {
+    Post.find()
+    .then(posts => {
+        res.status(200).json(posts.map(post => {
+            return {
+                id: post._id,
+                title: post.title,
+                author: post.authorName,
+                content: post.title
+            }
+        }));
+    })
+})
+
+
 router.get('/:id', (req, res) => {
     const { id } = req.params;
     Post.findById(id)
     .then(post => {
+        console.log("FOUND", post);
         if (!post) {
             const message = `No post found with id ${id}`;
             res.status(400).json({ message });
         }
-        res.status(200).json(post.serialize());
+        res.status(200).json({
+            id: post._id,
+            title: post.title,
+            author: post.authorName,
+            content: post.title,
+            comments: post.comments
+        });
     })
     .catch(err => {
         console.error(err);
