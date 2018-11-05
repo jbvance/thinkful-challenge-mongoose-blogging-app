@@ -2,34 +2,57 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
+const mongoose = require('mongoose');
 
 
-const { Post } = require('./models');
+const { Post, Author } = require('./models');
 
 router.post('/', jsonParser, (req, res) => {
 
-    const requiredFields = ['title', 'content', 'author'];
+    const requiredFields = ['title', 'content', 'author_id'];
     requiredFields.forEach(field => {
         if (!(field in req.body)) {
-            console.error(message);
-            return res.status(400).json({ message });
+            return res.status(400).json({
+                message: 'Must include title, content, and author_id in body fields'
+            });
         }
     })
+    // Check for author_id
+    Author.findById(req.body.author_id)
+        .then(author => {
+            if (author) {
+                const {
+                    title,
+                    content,
+                    author_id
+                } = req.body;
 
-    const { title, content, author } = req.body;
-  
-    Post
-      .create({
-        title,
-        content,
-        author })
-      .then(
-        post => res.status(201).json(post.serialize()))
-      .catch(err => {
-        console.error(err);
-        res.status(500).json({message: 'Internal server error'});
-      });
-  });
+                Post
+                    .create({
+                        title,
+                        content,
+                        author: author_id
+                    })
+                    .then(
+                        post => res.status(201).json({
+                            id: post.id,
+                            author: `${author.firstName} ${author.lastName}`,
+                            content: post.content,
+                            title: post.title,
+                            comments: post.comments
+                        }))
+                    .catch(err => {
+                        console.error(err);
+                        res.status(500).json({
+                            message: 'Internal server error'
+                        });
+                    });
+            } else {
+                res.status(400).json({message: 'Author not found'})
+            }
+        })
+
+});
 
 router.put('/:id', jsonParser, (req, res) => {
     if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
