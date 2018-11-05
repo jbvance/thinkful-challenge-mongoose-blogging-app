@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const blogPostsRouter = require('./blogPostsRouter');
@@ -6,7 +7,9 @@ const authorsRouter = require('./authorsRouter');
 
 // config.js is where we control constants for entire
 // app like PORT and DATABASE_URL
-const { PORT, DATABASE_URL } = require("./config");
+//const { PORT, DATABASE_URL } = require("./config");
+const DATABASE_URL = process.env.DATABASE_URL;
+const PORT = process.env.PORT;
 
 const app = express();
 
