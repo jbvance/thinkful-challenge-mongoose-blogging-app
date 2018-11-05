@@ -67,7 +67,7 @@ router.put('/:id', jsonParser, (req, res) => {
     }
 
     const toUpdate = {};
-    const updateableFields = ['title', 'author', 'content'];
+    const updateableFields = ['title', 'content'];
 
     updateableFields.forEach(field => {
         if (field in req.body) {
@@ -78,7 +78,12 @@ router.put('/:id', jsonParser, (req, res) => {
     Post.findByIdAndUpdate(req.params.id, 
         { $set: toUpdate}, 
         { new: true })
-    .then(post => res.status(200).json(post.serialize()))
+    .then(post => res.status(200).json({
+        id: post._id,
+        title: post.title,
+        content: post.content,
+        author: post.authorName       
+    }))
     .catch(err => res.status(500).json({
         message: 'Internal server error'
     }));

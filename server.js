@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const blogPostsRouter = require('./blogPostsRouter');
-const {Post} = require('./models');
+const authorsRouter = require('./authorsRouter');
 
 
 // config.js is where we control constants for entire
@@ -19,6 +19,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/posts', blogPostsRouter);
+app.use('/authors', authorsRouter)
 
 // catch-all endpoint if client makes request to non-existent endpoint
 app.use("*", function(req, res) {
